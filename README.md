@@ -667,21 +667,21 @@ The container may have created a new database. Use a volume mount when persisten
 
 Use this checklist before submitting the assignment.
 
-- [ ] Flask application starts and the dashboard loads.
-- [ ] Member registration and validation work.
-- [ ] Workout recording works.
-- [ ] Member profiles, BMI, and weight history work.
-- [ ] Automated tests pass.
-- [ ] Critical Flake8 check passes.
-- [ ] General Flake8 check passes.
-- [ ] Docker image builds successfully.
-- [ ] Tests pass inside Docker.
-- [ ] Git commit history is present.
-- [ ] Branch and pull-request workflow evidence is available, if required.
-- [ ] GitHub Actions completes successfully.
-- [ ] Jenkins completes successfully.
-- [ ] README and source files are pushed to the public repository.
-- [ ] Screenshots of successful results are saved for the submission report.
+- Flask application starts and the dashboard loads.
+- Member registration and validation work.
+- Workout recording works.
+- Member profiles, BMI, and weight history work.
+- Automated tests pass.
+- Critical Flake8 check passes.
+- General Flake8 check passes.
+- Docker image builds successfully.
+- Tests pass inside Docker.
+- Git commit history is present.
+- Branch and pull-request workflow evidence is available.
+- GitHub Actions completes successfully.
+- Jenkins completes successfully.
+- README and source files are pushed to the public repository.
+- Screenshots of successful results are saved for the submission report.
 
 Do not mark a checklist item complete until its result has been verified.
 

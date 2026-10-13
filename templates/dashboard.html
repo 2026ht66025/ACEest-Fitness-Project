@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEest Fitness | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="brand" href="/">
+            <span class="brand-mark">A</span>
+            <span class="brand-name">ACEEST<small>FITNESS &amp; GYM</small></span>
+        </a>
+
+        <p class="nav-label">WORKSPACE</p>
+        <nav>
+            <a class="nav-item active" href="/">▦ <span>Dashboard</span></a>
+            <a class="nav-item" href="#members">♙ <span>Members</span></a>
+            <a class="nav-item" href="#workouts">▤ <span>Workouts</span></a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <span class="online-dot"></span>
+            <span>GYM MANAGEMENT</span>
+            <p>Built for consistency.</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">OVERVIEW</p>
+                <h1>Dashboard <span class="gold-dot">.</span></h1>
+            </div>
+            <div class="system-status"><span class="online-dot"></span> SYSTEM ONLINE</div>
+        </header>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <p class="eyebrow">TOTAL MEMBERS</p>
+                <h2>{{ total_members }}</h2>
+                <p>Registered clients</p>
+            </article>
+            <article class="stat-card">
+                <p class="eyebrow">WORKOUT RECORDS</p>
+                <h2>{{ total_workouts }}</h2>
+                <p>Recent activity shown</p>
+            </article>
+            <article class="stat-card philosophy">
+                <p class="eyebrow">YOUR PHILOSOPHY</p>
+                <h2>01 <span>/ DAY</span></h2>
+                <p>One step at a time</p>
+            </article>
+        </section>
+
+        <section class="forms-grid">
+            <article class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">MEMBER MANAGEMENT</p>
+                        <h3>Register Member</h3>
+                    </div>
+                    <span class="panel-number">01</span>
+                </div>
+
+                <form action="{{ url_for('add_member') }}" method="post">
+                    <label for="name">Full name</label>
+                    <input id="name" name="name" placeholder="Enter member name" required>
+
+                    <label for="email">Email address</label>
+                    <input id="email" name="email" type="email"
+                           placeholder="member@example.com" required>
+
+                    <div class="field-grid">
+                        <div>
+                            <label for="age">Age</label>
+                            <input id="age" name="age" type="number"
+                                   min="1" max="120" placeholder="25" required>
+                        </div>
+                        <div>
+                            <label for="height">Height (cm)</label>
+                            <input id="height" name="height" type="number"
+                                   min="1" step="0.1" placeholder="175" required>
+                        </div>
+                    </div>
+
+                    <div class="field-grid">
+                        <div>
+                            <label for="weight">Weight (kg)</label>
+                            <input id="weight" name="weight" type="number"
+                                   min="0.1" step="0.1" placeholder="70" required>
+                        </div>
+                        <div>
+                            <label for="membership">Membership</label>
+                            <select id="membership" name="membership">
+                                <option>Monthly</option>
+                                <option>Quarterly</option>
+                                <option>Annual</option>
+                                <option>Expired</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="gold-button" type="submit">
+                        REGISTER MEMBER <span>↗</span>
+                    </button>
+                </form>
+            </article>
+
+            <article class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">TRAINING LOG</p>
+                        <h3>Record Workout</h3>
+                    </div>
+                    <span class="panel-number">02</span>
+                </div>
+
+                {% if members %}
+                <form action="{{ url_for('add_workout') }}" method="post">
+                    <label for="member_id">Select member</label>
+                    <select id="member_id" name="member_id" required>
+                        {% for member in members %}
+                        <option value="{{ member.id }}">{{ member.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="workout">Workout / exercise</label>
+                    <input id="workout" name="workout"
+                           placeholder="e.g. Strength training" required>
+
+                    <label for="duration">Duration (minutes)</label>
+                    <input id="duration" name="duration" type="number"
+                           min="1" placeholder="45" required>
+
+                    <label for="workout-notes">Notes</label>
+                    <textarea id="workout-notes" name="notes"
+                              placeholder="Sets, reps or other notes"></textarea>
+
+                    <button class="gold-button" type="submit">
+                        SAVE WORKOUT <span>↗</span>
+                    </button>
+                </form>
+                {% else %}
+                <div class="empty-state">
+                    <span class="plus-icon">＋</span>
+                    <strong>No members yet</strong>
+                    <p>Register your first member before recording a workout.</p>
+                </div>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="panel data-panel" id="members">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">YOUR COMMUNITY</p>
+                    <h3>Members <span class="count">({{ total_members }})</span></h3>
+                </div>
+                <span class="panel-number">03</span>
+            </div>
+
+            {% if members %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>MEMBER</th><th>AGE</th><th>WEIGHT</th>
+                        <th>MEMBERSHIP</th><th>ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in members %}
+                    <tr>
+                        <td>
+                            <div class="member-cell">
+                                <span class="avatar">A</span>
+                                <span>{{ member.name }}<small>{{ member.email }}</small></span>
+                            </div>
+                        </td>
+                        <td>{{ member.age }}</td>
+                        <td>{{ "%.1f"|format(member.weight) }} kg</td>
+                        <td><span class="membership-tag">{{ member.membership }}</span></td>
+                        <td class="actions">
+                            <a href="{{ url_for('member_profile', client_id=member.id) }}">VIEW</a>
+                            <form action="{{ url_for('delete_member', client_id=member.id) }}"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this member and their records?')">
+                                <button class="delete-button" type="submit">DELETE</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-table">No members registered yet.</div>
+            {% endif %}
+        </section>
+
+        <section class="panel data-panel" id="workouts">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">LATEST ACTIVITY</p>
+                    <h3>Recent Workouts</h3>
+                </div>
+                <span class="panel-number">04</span>
+            </div>
+
+            {% if workouts %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>MEMBER</th><th>WORKOUT</th>
+                        <th>DURATION</th><th>DATE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for workout in workouts %}
+                    <tr>
+                        <td>{{ workout.member_name }}</td>
+                        <td>{{ workout.workout }}</td>
+                        <td>{{ workout.duration }} min</td>
+                        <td>{{ workout.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-table">No workouts recorded yet.</div>
+            {% endif %}
+        </section>
+
+        <footer>
+            <span>ACEEST FITNESS &amp; GYM</span>
+            <span>DISCIPLINE. CONSISTENCY. PROGRESS.</span>
+        </footer>
+    </main>
+</div>
+</body>
+</html>

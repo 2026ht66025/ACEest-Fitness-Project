@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEest Fitness | Member Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="brand" href="/">
+            <span class="brand-mark">A</span>
+            <span class="brand-name">ACEEST<small>FITNESS &amp; GYM</small></span>
+        </a>
+        <p class="nav-label">WORKSPACE</p>
+        <nav>
+            <a class="nav-item" href="/">▦ <span>Dashboard</span></a>
+            <a class="nav-item active" href="/">♙ <span>Members</span></a>
+            <a class="nav-item" href="/#workouts">▤ <span>Workouts</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <span class="online-dot"></span> GYM MANAGEMENT
+            <p>Built for consistency.</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">MEMBER MANAGEMENT</p>
+                <h1>{{ member.name }}<span class="gold-dot">.</span></h1>
+            </div>
+            <a class="nav-item active" href="/">← Dashboard</a>
+        </header>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <p class="eyebrow">AGE</p>
+                <h2>{{ member.age }}</h2>
+                <p>Years old</p>
+            </article>
+            <article class="stat-card">
+                <p class="eyebrow">CURRENT WEIGHT</p>
+                <h2>{{ "%.1f"|format(member.weight) }} <span>kg</span></h2>
+                <p>Latest measurement</p>
+            </article>
+            <article class="stat-card philosophy">
+                <p class="eyebrow">BODY MASS INDEX</p>
+                <h2>{{ bmi }}</h2>
+                <p>General screening measure</p>
+            </article>
+        </section>
+
+        <section class="forms-grid">
+            <article class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">MEMBER DETAILS</p>
+                        <h3>Profile Information</h3>
+                    </div>
+                </div>
+                <p><strong>Name:</strong> {{ member.name }}</p>
+                <p><strong>Email:</strong> {{ member.email }}</p>
+                <p><strong>Height:</strong> {{ member.height }} cm</p>
+                <p><strong>Membership:</strong> {{ member.membership }}</p>
+            </article>
+
+            <article class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">PROGRESS TRACKING</p>
+                        <h3>Record Weight</h3>
+                    </div>
+                </div>
+                <form action="{{ url_for('add_weight', client_id=member.id) }}"
+                      method="post">
+                    <label for="weight">Weight (kg)</label>
+                    <input id="weight" name="weight" type="number"
+                           min="0.1" step="0.1" placeholder="Enter current weight"
+                           required>
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes"
+                              placeholder="Optional notes"></textarea>
+                    <button class="gold-button" type="submit">
+                        SAVE MEASUREMENT <span>↗</span>
+                    </button>
+                </form>
+            </article>
+        </section>
+
+        <section class="panel data-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">PROGRESS TRACKING</p>
+                    <h3>Weight History</h3>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr><th>WEIGHT</th><th>NOTES</th><th>DATE</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for item in weights %}
+                    <tr>
+                        <td>{{ "%.1f"|format(item.weight) }} kg</td>
+                        <td>{{ item.notes or "—" }}</td>
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3">No weight measurements recorded.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel data-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">TRAINING LOG</p>
+                    <h3>Workout History</h3>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr><th>WORKOUT</th><th>DURATION</th><th>NOTES</th><th>DATE</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for item in workouts %}
+                    <tr>
+                        <td>{{ item.workout }}</td>
+                        <td>{{ item.duration }} min</td>
+                        <td>{{ item.notes or "—" }}</td>
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4">No workouts recorded.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <span>ACEEST FITNESS &amp; GYM</span>
+            <span>DISCIPLINE. CONSISTENCY. PROGRESS.</span>
+        </footer>
+    </main>
+</div>
+</body>
+</html>

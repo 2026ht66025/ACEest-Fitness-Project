@@ -688,3 +688,33 @@ Do not mark a checklist item complete until its result has been verified.
 ---
 
 **Repository:** https://github.com/2026ht66025/ACEest-Fitness-Project
+## Git Branching and Pull Request Workflow
+
+The project uses feature branches to develop changes separately from the main branch. This allows changes to be reviewed before they are merged into the main codebase.
+
+### Workflow
+
+1. Create a feature branch from `main`.
+2. Make the required changes and test them locally.
+3. Commit the changes with a descriptive commit message.
+4. Push the feature branch to GitHub.
+5. Open a pull request targeting `main`.
+6. Review the changes and verify the CI checks.
+7. Merge the pull request after the checks pass.
+
+### Example Git Commands
+
+```bash
+git switch main
+git pull origin main
+git switch -c feature/example-change
+
+# Make and test your changes
+git add README.md
+git commit -m "Document feature branch workflow"
+git push -u origin feature/example-change
+```
+
+After pushing, create a pull request on GitHub from the feature branch into `main`.
+
+This workflow improves traceability, supports code review, and helps prevent untested changes from being merged directly into the main branch.

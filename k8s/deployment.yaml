@@ -1,9 +1,11 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aceest-fitness
   labels:
     app: aceest-fitness
+    version: blue
 spec:
   replicas: 1
   selector:
@@ -13,6 +15,7 @@ spec:
     metadata:
       labels:
         app: aceest-fitness
+        version: blue
     spec:
       containers:
         - name: aceest-fitness
@@ -21,6 +24,9 @@ spec:
           ports:
             - containerPort: 5000
               name: http
+          volumeMounts:
+            - name: fitness-storage
+              mountPath: /app/instance
           resources:
             requests:
               memory: "128Mi"
@@ -28,3 +34,7 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
+      volumes:
+        - name: fitness-storage
+          persistentVolumeClaim:
+            claimName: aceest-fitness-pvc

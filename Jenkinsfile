@@ -68,12 +68,30 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
-                sh '''
-                    docker build \
-                        -t aceest-fitness:${BUILD_NUMBER} .
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        set +x
+
+                        docker build \
+                            -t aceest-fitness:${BUILD_NUMBER} \
+                            -t ${DOCKERHUB_USER}/aceest-fitness:${BUILD_NUMBER} \
+                            -t ${DOCKERHUB_USER}/aceest-fitness:latest .
+
+                        echo "$DOCKERHUB_TOKEN" | docker login \
+                            -u "$DOCKERHUB_USER" --password-stdin
+
+                        docker push ${DOCKERHUB_USER}/aceest-fitness:${BUILD_NUMBER}
+                        docker push ${DOCKERHUB_USER}/aceest-fitness:latest
+
+                        docker logout
+                    '''
+                }
             }
         }
 

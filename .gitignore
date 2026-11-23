@@ -9,3 +9,8 @@ instance/
 .env
 .coverage
 htmlcov/
+# CI/CD generated files
+.scannerwork/
+coverage.xml
+.venv-ci/
+reports/

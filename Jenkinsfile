@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -28,13 +29,28 @@ pipeline {
             }
         }
 
-        stage('Pytest') {
+        stage('Pytest and Coverage') {
             steps {
                 sh '''
                     mkdir -p reports
                     . .venv-ci/bin/activate
-                    pytest -v --junitxml=reports/pytest.xml
+                    pytest -v \
+                        --junitxml=reports/pytest.xml \
+                        --cov=app \
+                        --cov-report=xml:coverage.xml
                 '''
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('ACEest-SonarQube') {
+		sh '''
+    			/home/s2026ht66025/tools/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
+      			-Dsonar.projectKey=ACEest-Fitness \
+      			-Dsonar.python.coverage.reportPaths=coverage.xml
+		'''
+                }
             }
         }
 
@@ -58,6 +74,10 @@ pipeline {
         always {
             junit allowEmptyResults: true,
                   testResults: 'reports/pytest.xml'
+
+            archiveArtifacts artifacts: 'coverage.xml,reports/pytest.xml',
+                             allowEmptyArchive: true
         }
     }
 }
+

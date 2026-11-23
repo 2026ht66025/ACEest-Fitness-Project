@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-fitness-service
+spec:
+  type: NodePort
+  selector:
+    app: aceest-fitness
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      nodePort: 30080
+      protocol: TCP

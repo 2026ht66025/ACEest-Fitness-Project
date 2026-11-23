@@ -3,6 +3,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -34,6 +35,7 @@ pipeline {
                 sh '''
                     mkdir -p reports
                     . .venv-ci/bin/activate
+
                     pytest -v \
                         --junitxml=reports/pytest.xml \
                         --cov=app \
@@ -44,19 +46,26 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('ACEest-SonarQube') {
-		sh '''
-    			/home/s2026ht66025/tools/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
-      			-Dsonar.projectKey=ACEest-Fitness \
-      			-Dsonar.python.coverage.reportPaths=coverage.xml
-		'''
+                script {
+                    def scannerHome = tool 'SonarScanner'
+
+                    withSonarQubeEnv('ACEest-SonarQube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=ACEest-Fitness \
+                                -Dsonar.python.coverage.reportPaths=coverage.xml
+                        """
+                    }
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t aceest-fitness:${BUILD_NUMBER} .'
+                sh '''
+                    docker build \
+                        -t aceest-fitness:${BUILD_NUMBER} .
+                '''
             }
         }
 
@@ -64,7 +73,8 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm --entrypoint python \
-                    aceest-fitness:${BUILD_NUMBER} -m pytest -v
+                        aceest-fitness:${BUILD_NUMBER} \
+                        -m pytest -v
                 '''
             }
         }
@@ -73,10 +83,20 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true,
-                  testResults: 'reports/pytest.xml'
+                testResults: 'reports/pytest.xml'
 
-            archiveArtifacts artifacts: 'coverage.xml,reports/pytest.xml',
-                             allowEmptyArchive: true
+            archiveArtifacts(
+                artifacts: 'coverage.xml,reports/pytest.xml',
+                allowEmptyArchive: true
+            )
+        }
+
+        success {
+            echo 'ACEest Fitness CI pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'ACEest Fitness CI pipeline failed. Check the stage logs.'
         }
     }
 }

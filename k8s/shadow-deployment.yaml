@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-shadow
+  labels:
+    app: aceest-fitness
+    version: shadow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      version: shadow
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        version: shadow
+    spec:
+      containers:
+        - name: aceest-fitness
+          image: 2026ht66025/aceest-fitness:7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"

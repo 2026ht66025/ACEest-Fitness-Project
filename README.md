@@ -718,3 +718,126 @@ git push -u origin feature/example-change
 After pushing, create a pull request on GitHub from the feature branch into `main`.
 
 This workflow improves traceability, supports code review, and helps prevent untested changes from being merged directly into the main branch.
+
+---
+
+## Kubernetes Deployment
+
+The application was deployed to a local Kubernetes cluster using Minikube.
+
+### Kubernetes Resources
+
+The following resources were created:
+
+- Blue and Green application deployments.
+- Kubernetes Services.
+- PersistentVolumeClaim for SQLite database persistence.
+- Canary Service and Ingress configuration.
+- Shadow deployment and Service.
+- Separate Ingress configurations for hostname-based A/B testing.
+
+### Useful Kubernetes Commands
+
+```bash
+minikube status
+kubectl get pods
+kubectl get deployments
+kubectl get services
+kubectl get ingress
+minikube ip
+```
+
+The application was exposed through NodePort 30080.
+
+## Deployment Strategies
+
+### 1. Blue-Green Deployment
+
+Two application environments, Blue and Green, were maintained. The Kubernetes Service selector was switched between the deployments to demonstrate traffic switching. The Service was subsequently restored to Blue.
+
+### 2. Canary Deployment
+
+Canary deployment was implemented using NGINX Ingress. A small proportion of incoming traffic was routed to Green while the remaining traffic continued to reach Blue.
+
+During validation, 30 requests produced the following distribution:
+
+- Blue: 27 requests
+- Green: 3 requests
+
+Both deployments returned successful HTTP responses.
+
+### 3. Shadow Deployment
+
+NGINX Ingress request mirroring was configured. Requests were served by the stable application while copies were forwarded to the Shadow deployment. The Shadow pod logs were inspected to verify mirrored requests.
+
+### 4. A/B Testing
+
+Hostname-based routing was configured:
+
+- `ab.aceest.local` routed requests to Blue.
+- `green.ab.aceest.local` routed requests to Green.
+
+Both endpoints returned successful HTTP responses. This demonstrates hostname-based routing, not randomized user assignment or statistical A/B analysis.
+
+### 5. Rolling Updates and Rollback
+
+The Kubernetes Deployment used the RollingUpdate strategy. A new image version was deployed, and the rollout history was inspected.
+
+Rollback was performed using:
+
+```bash
+kubectl rollout undo deployment/aceest-fitness
+```
+
+The previous image version was restored and the application endpoint was validated.
+
+## Static Code Analysis with SonarQube
+
+SonarQube was integrated into the Jenkins pipeline.
+
+**Project Key:** `ACEest-Fitness`
+
+The Quality Gate passed during validation.
+
+| Quality Metric | Rating |
+|---|---|
+| Reliability | A |
+| Security | A |
+| Maintainability | A |
+
+At the time of analysis, no new bugs, vulnerabilities, or code smells were reported.
+
+## Runtime and Environment Details
+
+The project was validated using:
+
+- Local Rocky Linux environment: Python 3.9.25.
+- Docker container: Python 3.9.25.
+- GitHub Actions CI runner: Python 3.11.
+
+## Docker Hub
+
+The application image was published to Docker Hub.
+
+**Repository:** https://hub.docker.com/r/2026ht66025/aceest-fitness
+
+The Jenkins pipeline builds and pushes Docker images using configured Docker Hub credentials.
+
+## Assignment 2 Validation Summary
+
+The following activities were validated:
+
+- Flask application containerization.
+- Automated testing using Pytest.
+- Code quality checks using Flake8.
+- GitHub Actions CI workflow.
+- Jenkins CI pipeline.
+- SonarQube static analysis and Quality Gate.
+- Docker image publishing to Docker Hub.
+- Kubernetes deployment using Minikube.
+- Blue-Green deployment.
+- Canary traffic routing.
+- Shadow request mirroring.
+- Hostname-based A/B routing.
+- Rolling updates and rollback.
+- Application endpoint availability after deployment changes.
